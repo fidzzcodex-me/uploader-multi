@@ -204,6 +204,7 @@
   .node.source .ic{background:var(--ink);}
   .node.a .ic{background:var(--orange);}
   .node.b .ic{background:var(--green);}
+  .node.c .ic{background:var(--orange-2);}
   .node small{display:block; color:var(--mute); font-weight:500; font-size:12px;}
   .flow-line{width:2px; height:20px; background:var(--line); margin-left:33px;}
 
@@ -280,11 +281,13 @@
   .provider-mark{
     width:44px; height:44px; border-radius:var(--radius-pill);
     display:flex; align-items:center; justify-content:center;
-    color:var(--white); font-weight:700; font-family:var(--font-display); font-size:16px;
+    color:var(--white); font-weight:700; font-family:var(--font-display); font-size:15px;
     flex-shrink:0;
   }
   .provider-mark.p1{background:var(--orange);}
   .provider-mark.p2{background:var(--ink);}
+  .provider-mark.p3{background:var(--green);}
+  .provider-mark.p4{background:var(--orange-2);}
   .provider-title{font-weight:700; font-size:16px;}
   .provider-sub{font-size:13px; color:var(--mute);}
   .provider-tags{display:flex; gap:8px; flex-wrap:wrap;}
@@ -601,11 +604,15 @@
         <div class="flow-line"></div>
         <div class="node a">
           <div class="ic"><i data-lucide="server" style="width:18px;height:18px;"></i></div>
-          <div>catbox.moe<br><small data-i18n="hero.node.njy">URL permanen</small></div>
+          <div>njy.my.id<br><small data-i18n="hero.node.njy">Khusus gambar & video</small></div>
         </div>
         <div class="node b">
           <div class="ic"><i data-lucide="clock" style="width:18px;height:18px;"></i></div>
           <div>unggah.web.id<br><small data-i18n="hero.node.unggah">URL dengan masa aktif</small></div>
+        </div>
+        <div class="node c">
+          <div class="ic"><i data-lucide="zap" style="width:18px;height:18px;"></i></div>
+          <div>uguu.se<br><small data-i18n="hero.node.uguu">Semua tipe file</small></div>
         </div>
       </div>
     </div>
@@ -660,25 +667,25 @@
       <div class="section-head" data-aos="fade-up">
         <div>
           <span class="kicker" data-i18n="providers.kicker">Tujuan pengiriman</span>
-          <h2 data-i18n="providers.title">Dua layanan, dua karakter</h2>
+          <h2 data-i18n="providers.title">Empat layanan, empat karakter</h2>
         </div>
         <p data-i18n="providers.lead">Dipakai bersamaan dalam satu proses, masing-masing dengan kelebihannya sendiri.</p>
       </div>
       <div class="provider-row">
         <div class="provider-card" data-aos="fade-up">
           <div class="provider-top">
-            <div class="provider-mark p1">C</div>
+            <div class="provider-mark p1">N</div>
             <div>
-              <div class="provider-title">catbox.moe</div>
+              <div class="provider-title">njy.my.id</div>
               <div class="provider-sub" data-i18n="providers.p1.sub">Upload langsung, URL tetap</div>
             </div>
           </div>
           <div class="provider-tags">
             <span class="tag" data-i18n="providers.p1.tag1">Tanpa kedaluwarsa</span>
-            <span class="tag" data-i18n="providers.p1.tag2">Semua tipe file</span>
+            <span class="tag" data-i18n="providers.p1.tag3">Khusus gambar & video</span>
           </div>
         </div>
-        <div class="provider-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="provider-card" data-aos="fade-up" data-aos-delay="80">
           <div class="provider-top">
             <div class="provider-mark p2">U</div>
             <div>
@@ -689,6 +696,32 @@
           <div class="provider-tags">
             <span class="tag" data-i18n="providers.p2.tag1">30 menit – 30 hari</span>
             <span class="tag" data-i18n="providers.p2.tag2">Ukuran file ditampilkan</span>
+          </div>
+        </div>
+        <div class="provider-card" data-aos="fade-up" data-aos-delay="160">
+          <div class="provider-top">
+            <div class="provider-mark p3">Ug</div>
+            <div>
+              <div class="provider-title">uguu.se</div>
+              <div class="provider-sub" data-i18n="providers.p3.sub">Upload cepat, tanpa akun</div>
+            </div>
+          </div>
+          <div class="provider-tags">
+            <span class="tag" data-i18n="providers.p3.tag1">Semua tipe file</span>
+            <span class="tag" data-i18n="providers.p3.tag2">Deteksi file duplikat</span>
+          </div>
+        </div>
+        <div class="provider-card" data-aos="fade-up" data-aos-delay="240">
+          <div class="provider-top">
+            <div class="provider-mark p4">G</div>
+            <div>
+              <div class="provider-title">gofile.io</div>
+              <div class="provider-sub" data-i18n="providers.p4.sub">Simpan dalam folder otomatis</div>
+            </div>
+          </div>
+          <div class="provider-tags">
+            <span class="tag" data-i18n="providers.p4.tag1">Semua tipe file</span>
+            <span class="tag" data-i18n="providers.p4.tag2">Ukuran besar didukung</span>
           </div>
         </div>
       </div>
@@ -825,7 +858,7 @@
       "hero.lead": "Satu file diteruskan ke dua layanan hosting berbeda dalam satu proses. Waktu tunggu terlihat jelas — bukan indikator yang menghilang tiba-tiba.",
       "hero.ctaPrimary": "Upload file", "hero.ctaGhost": "Lihat prosesnya",
       "hero.node.source": "File kamu", "hero.node.sourceSub": "gambar, video, dokumen",
-      "hero.node.njy": "URL permanen", "hero.node.unggah": "URL dengan masa aktif",
+      "hero.node.njy": "Khusus gambar & video", "hero.node.unggah": "URL dengan masa aktif", "hero.node.uguu": "Semua tipe file",
       "features.kicker": "Apa yang terjadi saat kamu klik proses",
       "features.title": "Bukan cuma tempat singgah file",
       "features.lead": "Setiap langkah dirancang supaya kamu tahu persis apa yang sedang dikerjakan sistem, bukan menebak dari layar kosong.",
@@ -835,10 +868,12 @@
       "features.f4.title": "Masa berlaku bisa diatur", "features.f4.body": "Untuk layanan yang mendukungnya, tentukan sendiri umur URL — dari 30 menit sampai 30 hari.",
       "features.f5.title": "Salin sekali klik", "features.f5.body": "Setiap URL hasil punya tombol salinnya sendiri — tidak perlu menyeleksi teks secara manual.",
       "features.f6.title": "Progres terlihat, bukan disamarkan", "features.f6.body": "Setiap kartu hasil punya indikator jalannya proses sendiri, jadi kamu tahu mana yang masih berjalan.",
-      "providers.kicker": "Tujuan pengiriman", "providers.title": "Dua layanan, dua karakter",
+      "providers.kicker": "Tujuan pengiriman", "providers.title": "Empat layanan, empat karakter",
       "providers.lead": "Dipakai bersamaan dalam satu proses, masing-masing dengan kelebihannya sendiri.",
-      "providers.p1.sub": "Upload langsung, URL tetap", "providers.p1.tag1": "Tanpa kedaluwarsa", "providers.p1.tag2": "Semua tipe file",
+      "providers.p1.sub": "Upload langsung, URL tetap", "providers.p1.tag1": "Tanpa kedaluwarsa", "providers.p1.tag3": "Khusus gambar & video",
       "providers.p2.sub": "Masa berlaku bisa diatur", "providers.p2.tag1": "30 menit – 30 hari", "providers.p2.tag2": "Ukuran file ditampilkan",
+      "providers.p3.sub": "Upload cepat, tanpa akun", "providers.p3.tag1": "Semua tipe file", "providers.p3.tag2": "Deteksi file duplikat",
+      "providers.p4.sub": "Simpan dalam folder otomatis", "providers.p4.tag1": "Semua tipe file", "providers.p4.tag2": "Ukuran besar didukung",
       "steps.kicker": "Empat langkah", "steps.title": "Dari file ke tautan",
       "steps.lead": "Satu kali proses, tanpa bolak-balik antar halaman upload.",
       "steps.s1.title": "Pilih media", "steps.s1.body": "Klik area upload atau seret file dari perangkatmu.",
@@ -868,7 +903,7 @@
       "hero.lead": "One file gets pushed to two different hosting services in a single run. The wait is visible the whole time — not a spinner that just vanishes.",
       "hero.ctaPrimary": "Upload a file", "hero.ctaGhost": "See how it runs",
       "hero.node.source": "Your file", "hero.node.sourceSub": "images, video, documents",
-      "hero.node.njy": "Permanent URL", "hero.node.unggah": "URL with expiry",
+      "hero.node.njy": "Images & video only", "hero.node.unggah": "URL with expiry", "hero.node.uguu": "Any file type",
       "features.kicker": "What happens when you hit process",
       "features.title": "More than a drop-off point",
       "features.lead": "Every step is built so you know exactly what the system is doing, instead of guessing at a blank screen.",
@@ -878,10 +913,12 @@
       "features.f4.title": "Expiry is adjustable", "features.f4.body": "For services that support it, set how long the URL stays alive — from 30 minutes to 30 days.",
       "features.f5.title": "Copy in one click", "features.f5.body": "Every result URL has its own copy button — no manual text selection needed.",
       "features.f6.title": "Progress you can actually see", "features.f6.body": "Each result card shows its own progress indicator, so you know what's still running.",
-      "providers.kicker": "Where files go", "providers.title": "Two services, two personalities",
+      "providers.kicker": "Where files go", "providers.title": "Four services, four personalities",
       "providers.lead": "Used together in a single run, each with its own strength.",
-      "providers.p1.sub": "Direct upload, permanent URL", "providers.p1.tag1": "Never expires", "providers.p1.tag2": "Any file type",
+      "providers.p1.sub": "Direct upload, permanent URL", "providers.p1.tag1": "Never expires", "providers.p1.tag3": "Images & video only",
       "providers.p2.sub": "Adjustable expiry", "providers.p2.tag1": "30 min – 30 days", "providers.p2.tag2": "Shows file size",
+      "providers.p3.sub": "Fast upload, no account", "providers.p3.tag1": "Any file type", "providers.p3.tag2": "Duplicate detection",
+      "providers.p4.sub": "Stored in an auto-created folder", "providers.p4.tag1": "Any file type", "providers.p4.tag2": "Supports large files",
       "steps.kicker": "Four steps", "steps.title": "From file to link",
       "steps.lead": "One pass, no switching between separate upload pages.",
       "steps.s1.title": "Pick a file", "steps.s1.body": "Click the upload area or drag a file from your device.",
@@ -1170,8 +1207,10 @@
   }
 
   const providers = [
-    { id: 'catbox', label: 'catbox.moe', run: uploadToCatbox },
-    { id: 'unggah', label: 'unggah.web.id', run: uploadToUnggah }
+    { id: 'njy', label: 'njy.my.id', run: uploadToNjy },
+    { id: 'unggah', label: 'unggah.web.id', run: uploadToUnggah },
+    { id: 'uguu', label: 'uguu.se', run: uploadToUguu },
+    { id: 'gofile', label: 'gofile.io', run: uploadToGofile }
   ];
 
   function renderPending(){
@@ -1233,7 +1272,7 @@
     });
   }
 
-  async function uploadToCatbox(){
+  async function uploadToNjy(){
     const fd = new FormData();
     fd.append('file', selectedFile, selectedFile.name);
     const res = await fetch('/api/tools/tourl', { method: 'POST', body: fd });
@@ -1241,7 +1280,7 @@
     if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
     const url = data.result?.url || data.result?.file || data.result;
     if(!url) throw new Error(t('upload.noUrl'));
-    renderResult('catbox', true, typeof url === 'string' ? url : JSON.stringify(url));
+    renderResult('njy', true, typeof url === 'string' ? url : JSON.stringify(url));
   }
 
   async function uploadToUnggah(){
@@ -1254,6 +1293,28 @@
     const url = data.result?.url;
     if(!url) throw new Error(t('upload.noUrl'));
     renderResult('unggah', true, url, `${t('upload.validUntil')} ${data.result?.expiredAt || expirySelect.value}`);
+  }
+
+  async function uploadToUguu(){
+    const fd = new FormData();
+    fd.append('file', selectedFile, selectedFile.name);
+    const res = await fetch('/api/tools/uguu', { method: 'POST', body: fd });
+    const data = await res.json();
+    if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
+    const url = data.result?.url;
+    if(!url) throw new Error(t('upload.noUrl'));
+    renderResult('uguu', true, url);
+  }
+
+  async function uploadToGofile(){
+    const fd = new FormData();
+    fd.append('file', selectedFile, selectedFile.name);
+    const res = await fetch('/api/tools/gofile', { method: 'POST', body: fd });
+    const data = await res.json();
+    if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
+    const url = data.result?.url;
+    if(!url) throw new Error(t('upload.noUrl'));
+    renderResult('gofile', true, url);
   }
 
   processBtn.addEventListener('click', async () => {
