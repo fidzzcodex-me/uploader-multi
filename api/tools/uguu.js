@@ -21,7 +21,7 @@ async function handler(req, res) {
     fd.append("files[]", file.buffer, { filename: file.originalname });
 
     const upload = await axios.post(
-      "https://uguu.se/upload.php",
+      "https://uguu.se/upload",
       fd,
       {
         headers: {
@@ -34,13 +34,16 @@ async function handler(req, res) {
       }
     );
 
-    const data = upload.data;
+    let data = upload.data;
+    if (typeof data === "string") {
+      try { data = JSON.parse(data); } catch (_) { /* keep as string, handled below */ }
+    }
     const uploaded = data && data.success && Array.isArray(data.files) && data.files[0];
 
     if (!uploaded || !uploaded.url) {
       return res.status(502).json({
         status: false,
-        message: "uguu.se menolak file ini.",
+        message: "uguu.se menolak file ini atau format respons berubah.",
         detail: typeof data === "string" ? data.slice(0, 300) : data
       });
     }
