@@ -92,55 +92,79 @@ function getUploadHeaders() {
     };
 }
 
+async function getBestServer() {
+    const response = await axios.get('https://api.gofile.io/servers', {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36',
+            'Accept': 'application/json'
+        },
+        timeout: 15000
+    });
+
+    const data = response.data;
+    if (data && data.status === 'ok' && data.data) {
+        // Modern response shape: { data: { servers: [{name: "store1", zone: "eu"}, ...] } }
+        const servers = data.data.servers || data.data.serversAllZone;
+        if (Array.isArray(servers) && servers.length > 0) {
+            return servers[0].name;
+        }
+        // Legacy shape: { data: { server: "store1" } }
+        if (data.data.server) {
+            return data.data.server;
+        }
+    }
+
+    throw new Error('Tidak bisa mendapatkan server upload gofile.io');
+}
+
 async function uploadToGoFile(fileBuffer, filename) {
-    if (!accountToken) {
-        await getAccountToken();
-    }
-    if (!websiteToken) {
-        websiteToken = generateWebsiteToken();
-    }
-    
-    const form = new FormData();
-    form.append('file', fileBuffer, { filename });
-    
     try {
-        const response = await axios.post('https://upload.gofile.io/uploadfile', form, {
+        const server = await getBestServer();
+
+        const form = new FormData();
+        form.append('file', fileBuffer, { filename });
+
+        const response = await axios.post(`https://${server}.gofile.io/contents/uploadfile`, form, {
             headers: {
                 ...form.getHeaders(),
-                ...getUploadHeaders()
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36',
+                'Accept': 'application/json'
             },
+            maxBodyLength: Infinity,
+            maxContentLength: Infinity,
             timeout: 120000
         });
-        
+
         const data = response.data;
-        
+
         if (data && data.status === 'ok' && data.data) {
             const file = data.data;
             return {
                 success: true,
                 url: file.downloadPage || file.link,
-                directUrl: `https://gofile.io/d/${file.parentFolderCode}`,
+                directUrl: file.downloadPage ? file.downloadPage : `https://gofile.io/d/${file.parentFolderCode || file.code}`,
                 name: file.name,
                 size: file.size,
                 md5: file.md5,
-                folderCode: file.parentFolderCode,
+                folderCode: file.parentFolderCode || file.code,
                 folderId: file.parentFolder,
                 guestToken: file.guestToken
             };
         }
-        
+
         return {
             success: false,
-            error: 'Upload gagal',
+            error: (data && data.status) ? `gofile status: ${data.status}` : 'Upload gagal',
             data: response.data
         };
-        
+
     } catch (error) {
+        const raw = error.response?.data;
         return {
             success: false,
-            error: error.message,
+            error: (typeof raw === 'string' ? raw.slice(0, 300) : null) || error.message,
             status: error.response?.status,
-            data: error.response?.data
+            data: raw
         };
     }
 }
