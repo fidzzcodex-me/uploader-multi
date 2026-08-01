@@ -2,6 +2,10 @@ const FormData = require("form-data");
 const axios = require("axios");
 const { parseSingleFile } = require("../_lib/parseMultipart");
 
+function isImageOrVideo(mimetype) {
+  return typeof mimetype === "string" && (mimetype.startsWith("image/") || mimetype.startsWith("video/"));
+}
+
 async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ status: false, message: "Method not allowed" });
@@ -17,53 +21,49 @@ async function handler(req, res) {
       });
     }
 
+    if (!isImageOrVideo(file.mimetype)) {
+      return res.status(415).json({
+        status: false,
+        message: "njy.my.id hanya mendukung file gambar atau video (only supp image/video).",
+        detail: { mimetype: file.mimetype }
+      });
+    }
+
     const fd = new FormData();
-    fd.append("userhash", "");
-    fd.append("reqtype", "fileupload");
-    fd.append("fileToUpload", file.buffer, { filename: file.originalname });
+
+    fd.append("file", file.buffer, {
+      filename: file.originalname,
+      contentType: file.mimetype
+    });
 
     const upload = await axios.post(
-      "https://catbox.moe/user/api.php",
+      "https://njy.my.id/api/upload",
       fd,
       {
-        headers: {
-          ...fd.getHeaders(),
-          "User-Agent": "multiput/1.0 (+https://catbox.moe/tools.php)"
-        },
+        headers: fd.getHeaders(),
         maxBodyLength: Infinity,
-        maxContentLength: Infinity,
-        timeout: 60000
+        maxContentLength: Infinity
       }
     );
 
-    const resultUrl = typeof upload.data === "string" ? upload.data.trim() : "";
-
-    if (!resultUrl || !resultUrl.startsWith("http")) {
+    if (!upload.data || upload.data.status === false || !upload.data.result) {
       return res.status(502).json({
         status: false,
-        message: "catbox.moe menolak file ini (kemungkinan tipe file tidak diizinkan atau server sedang membatasi permintaan).",
-        detail: typeof upload.data === "string" ? upload.data.slice(0, 300) : upload.data
+        message: "njy.my.id menolak file ini.",
+        detail: upload.data
       });
     }
 
     return res.json({
       status: true,
       creator: "multiput",
-      result: { url: resultUrl }
+      result: upload.data.result
     });
 
   } catch (e) {
-    const status = e.response?.status;
-    let message = e.response?.data;
-    message = typeof message === "string" ? message.slice(0, 300) : (e.message || "Terjadi kesalahan saat menghubungi catbox.moe");
-
-    if (status === 412) {
-      message = "catbox.moe menolak permintaan (412). Biasanya karena file tidak didukung atau server sedang memblokir permintaan otomatis — coba lagi beberapa saat.";
-    }
-
-    return res.status(status || 500).json({
+    return res.status(e.response?.status || 500).json({
       status: false,
-      message,
+      message: e.response?.data?.message || e.message,
       detail: e.response?.data || null
     });
   }
