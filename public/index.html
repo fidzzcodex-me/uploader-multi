@@ -24,6 +24,13 @@
     --line:#C7CACB;
     --white:#FFFFFF;
     --radius-pill:999px;
+    --radius-xl:32px;
+    --radius-lg:26px;
+    --radius-md:20px;
+    --radius-sm:16px;
+    --shadow-soft:0 2px 8px rgba(8,8,8,.04);
+    --shadow-card:0 10px 30px -12px rgba(8,8,8,.10);
+    --shadow-hover:0 20px 44px -14px rgba(255,105,1,.28);
     --font-display:'Poppins', sans-serif;
     --font-body:'Inter', sans-serif;
   }
@@ -44,10 +51,18 @@
   header{
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
-    padding:18px 40px;
-    background:rgba(242,242,240,.88);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
+    padding:16px 24px;
+    margin:14px 24px 0;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(16px) saturate(160%);
+    border:1px solid rgba(199,202,203,.6);
+    border-radius:var(--radius-pill);
+    box-shadow:var(--shadow-soft);
+    transition:box-shadow .25s ease, background .25s ease;
+  }
+  header.scrolled{
+    background:rgba(255,255,255,.92);
+    box-shadow:var(--shadow-card);
   }
   .brand{
     display:flex; align-items:center; gap:10px;
@@ -82,9 +97,9 @@
     padding:10px 20px; border-radius:var(--radius-pill);
     font-size:13.5px; font-weight:700;
     display:flex; align-items:center; gap:8px;
-    transition:background .2s;
+    transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
   }
-  .nav-cta:hover{background:var(--orange);}
+  .nav-cta:hover{background:var(--orange); transform:translateY(-2px); box-shadow:var(--shadow-hover);}
 
   section{padding:100px 40px;}
   .container{max-width:1100px; margin:0 auto;}
@@ -141,9 +156,11 @@
     font-weight:700; font-size:15px;
     display:inline-flex; align-items:center; gap:10px;
     border:none; cursor:pointer;
-    transition:transform .18s ease, background .18s ease;
+    box-shadow:0 8px 20px -8px rgba(255,105,1,.5);
+    transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
   }
-  .btn-primary:hover{background:var(--orange-2); transform:translateY(-2px);}
+  .btn-primary:hover{background:var(--orange-2); transform:translateY(-3px); box-shadow:var(--shadow-hover);}
+  .btn-primary:active{transform:translateY(-1px);}
   .btn-ghost{
     padding:15px 24px; border-radius:var(--radius-pill);
     font-weight:700; font-size:15px;
@@ -151,31 +168,36 @@
     display:inline-flex; align-items:center; gap:8px;
     transition:all .18s ease;
   }
-  .btn-ghost:hover{background:var(--ink); color:var(--white);}
+  .btn-ghost:hover{background:var(--ink); color:var(--white); transform:translateY(-3px);}
 
   /* hero visual: multi-target diagram */
   .hero-visual{
     position:relative;
     background:var(--white);
     border:1px solid var(--line);
-    border-radius:20px;
-    padding:30px;
+    border-radius:var(--radius-xl);
+    padding:32px;
     min-height:340px;
     display:flex;
     flex-direction:column;
     justify-content:center;
+    box-shadow:var(--shadow-card);
+    transition:transform .4s cubic-bezier(.2,.8,.2,1);
   }
+  .hero-visual:hover{transform:translateY(-4px);}
   .node{
     display:flex; align-items:center; gap:12px;
     background:var(--paper-2);
     border:1px solid var(--line);
-    border-radius:12px;
+    border-radius:var(--radius-md);
     padding:14px 16px;
     margin-bottom:12px;
     font-size:14px; font-weight:600;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   }
+  .node:hover{transform:translateX(4px); border-color:var(--orange); box-shadow:var(--shadow-soft);}
   .node .ic{
-    width:34px; height:34px; border-radius:8px;
+    width:36px; height:36px; border-radius:var(--radius-pill);
     display:flex; align-items:center; justify-content:center;
     color:var(--white); flex-shrink:0;
   }
@@ -213,23 +235,30 @@
   .feat-list{
     display:grid;
     grid-template-columns:repeat(3, 1fr);
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
+    gap:18px;
   }
   .feat-item{
     background:var(--white);
-    padding:34px 30px;
-    transition:background .2s;
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:32px 28px;
+    box-shadow:var(--shadow-soft);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease;
   }
-  .feat-item:hover{background:var(--paper-2);}
+  .feat-item:hover{
+    transform:translateY(-6px);
+    box-shadow:var(--shadow-hover);
+    border-color:transparent;
+  }
   .feat-item .glyph{
-    width:36px; height:36px;
-    margin-bottom:22px;
+    width:44px; height:44px; padding:10px;
+    margin-bottom:20px;
     color:var(--orange);
+    background:var(--paper-2);
+    border-radius:var(--radius-pill);
+    display:flex; align-items:center; justify-content:center;
   }
+  .feat-item .glyph svg{width:22px; height:22px; stroke-width:1.7;}
   .feat-item h3{
     font-family:var(--font-display);
     font-size:21px; font-weight:600; margin-bottom:9px;
@@ -237,12 +266,19 @@
   .feat-item p{color:var(--ink-soft); font-size:14px; line-height:1.6;}
 
   /* ---------- PROVIDERS ---------- */
-  .providers{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
-  .provider-row{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
-  .provider-card{background:var(--paper-2); padding:30px; display:flex; flex-direction:column; gap:16px;}
+  .providers{background:var(--paper); border-radius:var(--radius-xl); margin:0 40px; padding:80px 0;}
+  .provider-row{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  .provider-card{
+    background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:30px; display:flex; flex-direction:column; gap:16px;
+    box-shadow:var(--shadow-soft);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease;
+  }
+  .provider-card:hover{transform:translateY(-6px); box-shadow:var(--shadow-card);}
   .provider-top{display:flex; align-items:center; gap:14px;}
   .provider-mark{
-    width:40px; height:40px; border-radius:10px;
+    width:44px; height:44px; border-radius:var(--radius-pill);
     display:flex; align-items:center; justify-content:center;
     color:var(--white); font-weight:700; font-family:var(--font-display); font-size:16px;
     flex-shrink:0;
@@ -259,27 +295,48 @@
   }
 
   /* ---------- STEPS ---------- */
-  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:0;}
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
   .step{
-    position:relative; padding:0 24px 0 0;
-    border-right:1px solid var(--line);
+    position:relative; padding:28px 22px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease;
   }
-  .step:last-child{border-right:none; padding-right:0;}
-  .step .glass-mini{width:30px; height:30px; color:var(--orange); margin-bottom:18px;}
+  .step:hover{transform:translateY(-6px); box-shadow:var(--shadow-card);}
+  .step .step-num{
+    position:absolute; top:20px; right:22px;
+    font-family:var(--font-display); font-size:13px; font-weight:600;
+    color:var(--line);
+  }
+  .step .glass-mini{
+    width:44px; height:44px; padding:10px; color:var(--orange);
+    margin-bottom:20px;
+    background:var(--paper-2); border-radius:var(--radius-pill);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step .glass-mini svg{width:22px; height:22px; stroke-width:1.7;}
   .step h4{font-size:17px; font-weight:700; margin-bottom:8px;}
   .step p{font-size:13.5px; color:var(--mute); line-height:1.55;}
 
   /* ---------- CTA STRIP ---------- */
   .cta-strip{
     background:var(--ink); color:var(--white);
-    border-radius:22px;
-    padding:52px 46px;
+    border-radius:var(--radius-xl);
+    padding:56px 48px;
     display:flex; align-items:center; justify-content:space-between; gap:24px;
     flex-wrap:wrap;
     position:relative;
     overflow:hidden;
   }
-  .cta-strip h3{font-family:var(--font-display); font-size:32px; font-weight:600; max-width:420px; line-height:1.15;}
+  .cta-strip::before{
+    content:'';
+    position:absolute; top:-40%; right:-10%;
+    width:420px; height:420px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,105,1,.35), transparent 70%);
+    pointer-events:none;
+  }
+  .cta-strip h3{font-family:var(--font-display); font-size:32px; font-weight:600; max-width:420px; line-height:1.15; position:relative; z-index:1;}
   .cta-strip .btn-primary{background:var(--orange); position:relative; z-index:1;}
 
   footer{
@@ -306,20 +363,23 @@
   .dropzone{
     background:var(--white);
     border:2px dashed var(--line);
-    border-radius:20px;
-    padding:52px 30px;
+    border-radius:var(--radius-xl);
+    padding:56px 30px;
     text-align:center;
     cursor:pointer;
-    transition:border-color .2s, background .2s;
+    transition:border-color .25s ease, background .25s ease, transform .25s ease;
     position:relative;
   }
-  .dropzone.drag{border-color:var(--orange); background:#FFF7F0;}
+  .dropzone:hover{border-color:var(--orange-2); transform:translateY(-2px);}
+  .dropzone.drag{border-color:var(--orange); background:#FFF7F0; transform:scale(1.01);}
   .dropzone .ic-wrap{
-    width:60px; height:60px; border-radius:16px;
+    width:64px; height:64px; border-radius:var(--radius-pill);
     background:var(--paper-2);
     display:flex; align-items:center; justify-content:center;
     margin:0 auto 18px; color:var(--orange);
+    transition:transform .3s ease, background .3s ease;
   }
+  .dropzone:hover .ic-wrap{transform:translateY(-3px) scale(1.06); background:#FFE9D6;}
   .dropzone h3{font-size:19px; font-weight:700; margin-bottom:6px;}
   .dropzone p{color:var(--mute); font-size:13.5px;}
   .dropzone input{display:none;}
@@ -328,10 +388,16 @@
   .file-preview{
     display:flex; align-items:center; gap:16px;
     background:var(--white); border:1px solid var(--line);
-    border-radius:14px; padding:16px 18px; margin-top:18px;
+    border-radius:var(--radius-md); padding:16px 18px; margin-top:18px;
+    box-shadow:var(--shadow-soft);
+    animation:pop-in .3s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes pop-in{
+    from{opacity:0; transform:translateY(8px) scale(.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
   }
   .file-preview .ic{
-    width:40px; height:40px; border-radius:10px; background:var(--paper-2);
+    width:42px; height:42px; border-radius:var(--radius-pill); background:var(--paper-2);
     display:flex; align-items:center; justify-content:center; color:var(--orange); flex-shrink:0;
   }
   .file-preview .meta{flex:1; min-width:0;}
@@ -347,7 +413,8 @@
   .expiry-row{
     display:flex; align-items:center; justify-content:space-between;
     margin-top:18px; background:var(--white); border:1px solid var(--line);
-    border-radius:14px; padding:14px 18px;
+    border-radius:var(--radius-md); padding:14px 18px;
+    box-shadow:var(--shadow-soft);
   }
   .expiry-row label{font-size:13.5px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
   .expiry-row select{
@@ -363,19 +430,25 @@
     padding:17px; border-radius:var(--radius-pill);
     font-weight:700; font-size:15px;
     display:flex; align-items:center; justify-content:center; gap:10px;
-    cursor:pointer; transition:background .2s, opacity .2s;
+    cursor:pointer;
+    box-shadow:0 8px 20px -8px rgba(255,105,1,.5);
+    transition:background .2s ease, opacity .2s ease, transform .2s ease, box-shadow .2s ease;
   }
-  .process-btn:hover{background:var(--orange-2);}
-  .process-btn:disabled{opacity:.5; cursor:not-allowed;}
+  .process-btn:hover:not(:disabled){background:var(--orange-2); transform:translateY(-2px); box-shadow:var(--shadow-hover);}
+  .process-btn:disabled{opacity:.5; cursor:not-allowed; box-shadow:none;}
 
   .results{margin-top:32px; display:flex; flex-direction:column; gap:12px;}
   .result-card{
     background:var(--white); border:1px solid var(--line);
-    border-radius:16px; padding:18px;
+    border-radius:var(--radius-md); padding:18px;
     display:flex; align-items:flex-start; gap:14px;
+    box-shadow:var(--shadow-soft);
+    animation:pop-in .35s cubic-bezier(.2,.8,.2,1);
+    transition:box-shadow .25s ease, transform .25s ease;
   }
+  .result-card:hover{transform:translateY(-2px); box-shadow:var(--shadow-card);}
   .result-card .badge{
-    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    width:40px; height:40px; border-radius:var(--radius-pill); flex-shrink:0;
     display:flex; align-items:center; justify-content:center; color:var(--white);
   }
   .result-card.pending .badge{background:var(--orange);}
@@ -424,31 +497,57 @@
     display:inline-flex; align-items:center; gap:8px;
     font-weight:700; font-size:13.5px; color:var(--ink-soft);
     margin-bottom:28px;
+    padding:8px 16px 8px 10px;
+    background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius-pill);
+    transition:color .2s ease, transform .2s ease, border-color .2s ease;
   }
-  .back-link:hover{color:var(--orange);}
+  .back-link:hover{color:var(--orange); border-color:var(--orange); transform:translateX(-3px);}
+
+  /* ---------- scroll progress ---------- */
+  #scrollProgress{
+    position:fixed; top:0; left:0; height:3px;
+    background:linear-gradient(90deg, var(--orange), var(--green));
+    width:0%; z-index:100;
+    transition:width .1s linear;
+  }
+
+  /* ---------- scroll-reveal (in addition to AOS) ---------- */
+  .reveal-up{
+    opacity:0; transform:translateY(28px);
+    transition:opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal-up.in-view{opacity:1; transform:translateY(0);}
 
   @media (prefers-reduced-motion: reduce){
     .hourglass-spin, .progress-fill{ animation:none !important; }
+    .reveal-up{ opacity:1 !important; transform:none !important; transition:none !important; }
+    header{ transition:none !important; }
+    .hero-visual{ transition:none !important; }
   }
 
   @media (max-width: 860px){
-    header{padding:16px 20px;}
+    header{padding:14px 18px; margin:12px 14px 0;}
     nav.links{display:none;}
     section{padding:64px 20px;}
-    .hero{padding:100px 20px 50px;}
+    .hero{padding:90px 20px 50px;}
     .hero-grid{grid-template-columns:1fr; gap:40px;}
-    h1{font-size:42px;}
+    h1{font-size:38px;}
     .feat-list{grid-template-columns:1fr;}
+    .providers{margin:0 20px; padding:56px 0;}
     .provider-row{grid-template-columns:1fr;}
-    .steps{grid-template-columns:1fr 1fr; row-gap:28px;}
-    .step{border-right:none;}
-    .step:nth-child(odd){border-right:1px solid var(--line);}
-    .cta-strip{flex-direction:column; align-items:flex-start;}
-    .upload-shell{padding:36px 20px 70px;}
+    .steps{grid-template-columns:1fr 1fr; gap:14px;}
+    .cta-strip{flex-direction:column; align-items:flex-start; padding:40px 30px;}
+    .upload-shell{padding:32px 20px 70px;}
+  }
+  @media (max-width: 520px){
+    .steps{grid-template-columns:1fr;}
   }
 </style>
 </head>
 <body>
+
+<div id="scrollProgress"></div>
 
 <!-- ============ LANDING PAGE ============ -->
 <div id="landingPage">
@@ -523,32 +622,32 @@
       </div>
       <div class="feat-list">
         <div class="feat-item" data-aos="fade-up" data-aos-delay="0">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16M12 4V15M12 15L7 10M12 15L17 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i class="glyph" data-lucide="mouse-pointer-click"></i>
           <h3 data-i18n="features.f1.title">Pilih media langsung</h3>
           <p data-i18n="features.f1.body">Klik area upload atau seret file dari perangkat. Gambar, video, audio, dan dokumen semua diterima.</p>
         </div>
         <div class="feat-item" data-aos="fade-up" data-aos-delay="80">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M12 3V10M12 10L7 6M12 10L17 6M6 14C6 17.3 8.7 20 12 20C15.3 20 18 17.3 18 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="14" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="14" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+          <i class="glyph" data-lucide="git-branch"></i>
           <h3 data-i18n="features.f2.title">Diproses paralel</h3>
           <p data-i18n="features.f2.body">Satu file dikirim ke kedua layanan pada waktu yang sama, bukan bergiliran menunggu satu selesai dulu.</p>
         </div>
         <div class="feat-item" data-aos="fade-up" data-aos-delay="160">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M12 3L20 7V12C20 16.4 16.4 20.5 12 21C7.6 20.5 4 16.4 4 12V7L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i class="glyph" data-lucide="shield-check"></i>
           <h3 data-i18n="features.f3.title">Kegagalan tidak disembunyikan</h3>
           <p data-i18n="features.f3.body">Kalau satu layanan menolak file, kamu lihat alasannya langsung — layanan yang lain tetap lanjut tanpa terganggu.</p>
         </div>
         <div class="feat-item" data-aos="fade-up" data-aos-delay="0">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i class="glyph" data-lucide="hourglass"></i>
           <h3 data-i18n="features.f4.title">Masa berlaku bisa diatur</h3>
           <p data-i18n="features.f4.body">Untuk layanan yang mendukungnya, tentukan sendiri umur URL — dari 30 menit sampai 30 hari.</p>
         </div>
         <div class="feat-item" data-aos="fade-up" data-aos-delay="80">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4C3.4 15 3 14.6 3 14V4C3 3.4 3.4 3 4 3H14C14.6 3 15 3.4 15 4V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <i class="glyph" data-lucide="copy-check"></i>
           <h3 data-i18n="features.f5.title">Salin sekali klik</h3>
           <p data-i18n="features.f5.body">Setiap URL hasil punya tombol salinnya sendiri — tidak perlu menyeleksi teks secara manual.</p>
         </div>
         <div class="feat-item" data-aos="fade-up" data-aos-delay="160">
-          <svg class="glyph" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7V12L15 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i class="glyph" data-lucide="activity"></i>
           <h3 data-i18n="features.f6.title">Progres terlihat, bukan disamarkan</h3>
           <p data-i18n="features.f6.body">Setiap kartu hasil punya indikator jalannya proses sendiri, jadi kamu tahu mana yang masih berjalan.</p>
         </div>
@@ -607,22 +706,26 @@
       </div>
       <div class="steps">
         <div class="step" data-aos="fade-up" data-aos-delay="0">
-          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16M12 4V15M12 15L7 10M12 15L17 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="step-num">01</span>
+          <i class="glass-mini" data-lucide="mouse-pointer-click"></i>
           <h4 data-i18n="steps.s1.title">Pilih media</h4>
           <p data-i18n="steps.s1.body">Klik area upload atau seret file dari perangkatmu.</p>
         </div>
         <div class="step" data-aos="fade-up" data-aos-delay="100">
-          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7V12L15 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="step-num">02</span>
+          <i class="glass-mini" data-lucide="hourglass"></i>
           <h4 data-i18n="steps.s2.title">Atur masa berlaku</h4>
           <p data-i18n="steps.s2.body">Tentukan umur URL jika layanan tujuan mendukungnya.</p>
         </div>
         <div class="step" data-aos="fade-up" data-aos-delay="200">
-          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="step-num">03</span>
+          <i class="glass-mini" data-lucide="zap"></i>
           <h4 data-i18n="steps.s3.title">Proses</h4>
           <p data-i18n="steps.s3.body">File berjalan ke kedua layanan pada saat yang sama.</p>
         </div>
         <div class="step" data-aos="fade-up" data-aos-delay="300">
-          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M12 3L20 7V12C20 16.4 16.4 20.5 12 21C7.6 20.5 4 16.4 4 12V7L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="step-num">04</span>
+          <i class="glass-mini" data-lucide="link-2"></i>
           <h4 data-i18n="steps.s4.title">Ambil tautan</h4>
           <p data-i18n="steps.s4.body">Setiap hasil tampil dengan status dan tombol salin sendiri.</p>
         </div>
@@ -942,8 +1045,36 @@
   particleControllers.upload = initParticles('particleCanvasUpload', document.getElementById('uploadPage'));
 
   lucide.createIcons();
-  AOS.init({ duration: 600, easing: 'ease-out', once: true });
+  AOS.init({ duration: 700, easing: 'ease-out-cubic', once: true, offset: 60 });
   applyTranslations();
+
+  // ---------- scroll progress bar + header shadow ----------
+  const scrollProgress = document.getElementById('scrollProgress');
+  function onScroll(){
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = (doc.scrollHeight || document.body.scrollHeight) - doc.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    if(scrollProgress) scrollProgress.style.width = pct + '%';
+
+    document.querySelectorAll('header').forEach(h => {
+      h.classList.toggle('scrolled', scrollTop > 12);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- reveal-on-scroll for elements not covered by AOS ----------
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
 
   const landingPage = document.getElementById('landingPage');
   const uploadPage = document.getElementById('uploadPage');
