@@ -601,7 +601,7 @@
         <div class="flow-line"></div>
         <div class="node a">
           <div class="ic"><i data-lucide="server" style="width:18px;height:18px;"></i></div>
-          <div>njy.my.id<br><small data-i18n="hero.node.njy">URL permanen</small></div>
+          <div>catbox.moe<br><small data-i18n="hero.node.njy">URL permanen</small></div>
         </div>
         <div class="node b">
           <div class="ic"><i data-lucide="clock" style="width:18px;height:18px;"></i></div>
@@ -667,9 +667,9 @@
       <div class="provider-row">
         <div class="provider-card" data-aos="fade-up">
           <div class="provider-top">
-            <div class="provider-mark p1">N</div>
+            <div class="provider-mark p1">C</div>
             <div>
-              <div class="provider-title">njy.my.id</div>
+              <div class="provider-title">catbox.moe</div>
               <div class="provider-sub" data-i18n="providers.p1.sub">Upload langsung, URL tetap</div>
             </div>
           </div>
@@ -1170,7 +1170,7 @@
   }
 
   const providers = [
-    { id: 'njy', label: 'njy.my.id', run: uploadToNjy },
+    { id: 'catbox', label: 'catbox.moe', run: uploadToCatbox },
     { id: 'unggah', label: 'unggah.web.id', run: uploadToUnggah }
   ];
 
@@ -1233,7 +1233,7 @@
     });
   }
 
-  async function uploadToNjy(){
+  async function uploadToCatbox(){
     const fd = new FormData();
     fd.append('file', selectedFile, selectedFile.name);
     const res = await fetch('/api/tools/tourl', { method: 'POST', body: fd });
@@ -1241,7 +1241,7 @@
     if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
     const url = data.result?.url || data.result?.file || data.result;
     if(!url) throw new Error(t('upload.noUrl'));
-    renderResult('njy', true, typeof url === 'string' ? url : JSON.stringify(url));
+    renderResult('catbox', true, typeof url === 'string' ? url : JSON.stringify(url));
   }
 
   async function uploadToUnggah(){
