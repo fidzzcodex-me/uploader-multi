@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>multiput — satu file, banyak tujuan</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+  :root{
+    --orange:#FF6901;
+    --orange-2:#FF691F;
+    --green:#00BB7F;
+    --sand:#E8DFC8;
+    --paper:#F2F2F0;
+    --paper-2:#F5F5F5;
+    --ink:#080808;
+    --ink-soft:#222222;
+    --mute:#9CA0A2;
+    --line:#C7CACB;
+    --white:#FFFFFF;
+    --radius-pill:999px;
+    --font-display:'Poppins', sans-serif;
+    --font-body:'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--orange); color:var(--white);}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:var(--font-body);}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    background:rgba(242,242,240,.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:22px;
+    letter-spacing:-.01em;
+  }
+  .brand .glass{width:16px; height:16px;}
+  nav.links{display:flex; gap:30px; font-size:14.5px; font-weight:600;}
+  nav.links a{color:var(--ink-soft); transition:color .2s;}
+  nav.links a:hover{color:var(--orange);}
+
+  .header-right{display:flex; align-items:center; gap:16px;}
+
+  /* language switcher */
+  .lang-switch{
+    display:flex; align-items:center;
+    background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius-pill); padding:3px;
+    font-size:12.5px; font-weight:700;
+  }
+  .lang-switch button{
+    border:none; background:none; cursor:pointer;
+    padding:6px 13px; border-radius:var(--radius-pill);
+    color:var(--mute); transition:background .18s, color .18s;
+  }
+  .lang-switch button.active{background:var(--ink); color:var(--white);}
+
+  .nav-cta{
+    background:var(--ink); color:var(--white);
+    padding:10px 20px; border-radius:var(--radius-pill);
+    font-size:13.5px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+    transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--orange);}
+
+  section{padding:100px 40px;}
+  .container{max-width:1100px; margin:0 auto;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:120px 40px 100px;
+    position:relative;
+    overflow:hidden;
+  }
+  #particleCanvas{
+    position:absolute; top:0; left:0;
+    width:100%; height:100%;
+    z-index:0; pointer-events:none;
+  }
+  .hero-grid{
+    position:relative; z-index:1;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:70px;
+    align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--orange-2);
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:''; width:18px; height:1.5px; background:var(--orange-2);
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:68px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin-bottom:26px;
+  }
+  h1 .accent{
+    color:var(--orange);
+  }
+  .hero p.lead{
+    font-size:18px;
+    color:var(--ink-soft);
+    max-width:480px;
+    line-height:1.65;
+    margin-bottom:36px;
+  }
+  .hero-actions{display:flex; gap:14px; align-items:center;}
+  .btn-primary{
+    background:var(--orange); color:var(--white);
+    padding:15px 28px; border-radius:var(--radius-pill);
+    font-weight:700; font-size:15px;
+    display:inline-flex; align-items:center; gap:10px;
+    border:none; cursor:pointer;
+    transition:transform .18s ease, background .18s ease;
+  }
+  .btn-primary:hover{background:var(--orange-2); transform:translateY(-2px);}
+  .btn-ghost{
+    padding:15px 24px; border-radius:var(--radius-pill);
+    font-weight:700; font-size:15px;
+    border:1.5px solid var(--ink);
+    display:inline-flex; align-items:center; gap:8px;
+    transition:all .18s ease;
+  }
+  .btn-ghost:hover{background:var(--ink); color:var(--white);}
+
+  /* hero visual: multi-target diagram */
+  .hero-visual{
+    position:relative;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:30px;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .node{
+    display:flex; align-items:center; gap:12px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:12px;
+    font-size:14px; font-weight:600;
+  }
+  .node .ic{
+    width:34px; height:34px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white); flex-shrink:0;
+  }
+  .node.source .ic{background:var(--ink);}
+  .node.a .ic{background:var(--orange);}
+  .node.b .ic{background:var(--green);}
+  .node small{display:block; color:var(--mute); font-weight:500; font-size:12px;}
+  .flow-line{width:2px; height:20px; background:var(--line); margin-left:33px;}
+
+  /* ---------- inline hourglass loader (used only during upload) ---------- */
+  .hourglass-spin{
+    display:inline-block; flex-shrink:0;
+    animation:hourglass-turn 1.8s cubic-bezier(.6,0,.4,1) infinite;
+  }
+  @keyframes hourglass-turn{
+    0%, 35%{ transform:rotate(0deg); }
+    65%, 100%{ transform:rotate(180deg); }
+  }
+
+  /* ---------- FEATURES ---------- */
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:52px; gap:24px; flex-wrap:wrap;
+  }
+  .section-head .kicker{
+    font-size:12.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--orange-2); margin-bottom:10px; display:block;
+  }
+  .section-head h2{
+    font-family:var(--font-display);
+    font-size:40px; font-weight:600; letter-spacing:-.01em;
+  }
+  .section-head p{color:var(--mute); font-size:15.5px; max-width:360px; line-height:1.55;}
+
+  .feat-list{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+  }
+  .feat-item{
+    background:var(--white);
+    padding:34px 30px;
+    transition:background .2s;
+  }
+  .feat-item:hover{background:var(--paper-2);}
+  .feat-item .glyph{
+    width:36px; height:36px;
+    margin-bottom:22px;
+    color:var(--orange);
+  }
+  .feat-item h3{
+    font-family:var(--font-display);
+    font-size:21px; font-weight:600; margin-bottom:9px;
+  }
+  .feat-item p{color:var(--ink-soft); font-size:14px; line-height:1.6;}
+
+  /* ---------- PROVIDERS ---------- */
+  .providers{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .provider-row{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
+  .provider-card{background:var(--paper-2); padding:30px; display:flex; flex-direction:column; gap:16px;}
+  .provider-top{display:flex; align-items:center; gap:14px;}
+  .provider-mark{
+    width:40px; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white); font-weight:700; font-family:var(--font-display); font-size:16px;
+    flex-shrink:0;
+  }
+  .provider-mark.p1{background:var(--orange);}
+  .provider-mark.p2{background:var(--ink);}
+  .provider-title{font-weight:700; font-size:16px;}
+  .provider-sub{font-size:13px; color:var(--mute);}
+  .provider-tags{display:flex; gap:8px; flex-wrap:wrap;}
+  .tag{
+    font-size:11.5px; font-weight:700; color:var(--ink-soft);
+    background:var(--white); border:1px solid var(--line);
+    padding:4px 10px; border-radius:var(--radius-pill);
+  }
+
+  /* ---------- STEPS ---------- */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:0;}
+  .step{
+    position:relative; padding:0 24px 0 0;
+    border-right:1px solid var(--line);
+  }
+  .step:last-child{border-right:none; padding-right:0;}
+  .step .glass-mini{width:30px; height:30px; color:var(--orange); margin-bottom:18px;}
+  .step h4{font-size:17px; font-weight:700; margin-bottom:8px;}
+  .step p{font-size:13.5px; color:var(--mute); line-height:1.55;}
+
+  /* ---------- CTA STRIP ---------- */
+  .cta-strip{
+    background:var(--ink); color:var(--white);
+    border-radius:22px;
+    padding:52px 46px;
+    display:flex; align-items:center; justify-content:space-between; gap:24px;
+    flex-wrap:wrap;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-strip h3{font-family:var(--font-display); font-size:32px; font-weight:600; max-width:420px; line-height:1.15;}
+  .cta-strip .btn-primary{background:var(--orange); position:relative; z-index:1;}
+
+  footer{
+    padding:36px 40px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    color:var(--mute); font-size:13px;
+  }
+
+  /* ================= UPLOAD PAGE ================= */
+  #uploadPage{display:none; min-height:100vh; position:relative; overflow:hidden;}
+  #particleCanvasUpload{
+    position:absolute; top:0; left:0;
+    width:100%; height:100%;
+    z-index:0; pointer-events:none;
+  }
+  #uploadPage > header, #uploadPage .upload-shell{
+    position:relative; z-index:1;
+  }
+  .upload-shell{max-width:720px; margin:0 auto; padding:56px 40px 100px;}
+  .upload-head{margin-bottom:36px;}
+  .upload-head h1{font-size:42px; margin-bottom:10px;}
+  .upload-head p{color:var(--mute); font-size:15.5px;}
+
+  .dropzone{
+    background:var(--white);
+    border:2px dashed var(--line);
+    border-radius:20px;
+    padding:52px 30px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .2s, background .2s;
+    position:relative;
+  }
+  .dropzone.drag{border-color:var(--orange); background:#FFF7F0;}
+  .dropzone .ic-wrap{
+    width:60px; height:60px; border-radius:16px;
+    background:var(--paper-2);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 18px; color:var(--orange);
+  }
+  .dropzone h3{font-size:19px; font-weight:700; margin-bottom:6px;}
+  .dropzone p{color:var(--mute); font-size:13.5px;}
+  .dropzone input{display:none;}
+  .dropzone.disabled{opacity:.55; pointer-events:none;}
+
+  .file-preview{
+    display:flex; align-items:center; gap:16px;
+    background:var(--white); border:1px solid var(--line);
+    border-radius:14px; padding:16px 18px; margin-top:18px;
+  }
+  .file-preview .ic{
+    width:40px; height:40px; border-radius:10px; background:var(--paper-2);
+    display:flex; align-items:center; justify-content:center; color:var(--orange); flex-shrink:0;
+  }
+  .file-preview .meta{flex:1; min-width:0;}
+  .file-preview .meta .name{font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .file-preview .meta .size{font-size:12px; color:var(--mute);}
+  .file-preview .remove{
+    background:none; border:none; cursor:pointer; color:var(--mute);
+    width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    transition:background .2s, color .2s;
+  }
+  .file-preview .remove:hover{background:var(--paper-2); color:var(--ink);}
+
+  .expiry-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:18px; background:var(--white); border:1px solid var(--line);
+    border-radius:14px; padding:14px 18px;
+  }
+  .expiry-row label{font-size:13.5px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
+  .expiry-row select{
+    border:1px solid var(--line); border-radius:var(--radius-pill);
+    padding:8px 16px; font-family:var(--font-body); font-size:13px; font-weight:600;
+    background:var(--paper-2); color:var(--ink);
+  }
+  .expiry-row select:disabled{opacity:.6;}
+
+  .process-btn{
+    width:100%; margin-top:22px;
+    background:var(--orange); color:var(--white); border:none;
+    padding:17px; border-radius:var(--radius-pill);
+    font-weight:700; font-size:15px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    cursor:pointer; transition:background .2s, opacity .2s;
+  }
+  .process-btn:hover{background:var(--orange-2);}
+  .process-btn:disabled{opacity:.5; cursor:not-allowed;}
+
+  .results{margin-top:32px; display:flex; flex-direction:column; gap:12px;}
+  .result-card{
+    background:var(--white); border:1px solid var(--line);
+    border-radius:16px; padding:18px;
+    display:flex; align-items:flex-start; gap:14px;
+  }
+  .result-card .badge{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:var(--white);
+  }
+  .result-card.pending .badge{background:var(--orange);}
+  .result-card.ok .badge{background:var(--green);}
+  .result-card.err .badge{background:#E24949;}
+  .result-body{flex:1; min-width:0;}
+  .result-name{font-weight:700; font-size:14.5px; margin-bottom:3px;}
+  .result-status{font-size:12.5px; color:var(--mute); margin-bottom:9px;}
+
+  .progress-track{
+    width:100%; height:5px; border-radius:var(--radius-pill);
+    background:var(--paper-2);
+    overflow:hidden;
+    margin-top:2px;
+  }
+  .progress-fill{
+    height:100%; width:36%;
+    border-radius:var(--radius-pill);
+    background:linear-gradient(90deg, var(--orange), var(--orange-2));
+    animation:progress-slide 1.3s ease-in-out infinite;
+  }
+  @keyframes progress-slide{
+    0%{ transform:translateX(-100%); }
+    100%{ transform:translateX(280%); }
+  }
+
+  .result-url{
+    display:flex; align-items:center; gap:10px;
+    background:var(--paper-2); border:1px solid var(--line);
+    border-radius:var(--radius-pill); padding:7px 7px 7px 15px;
+  }
+  .result-url input{
+    flex:1; border:none; background:none; font-size:12.5px; color:var(--ink-soft);
+    font-family:var(--font-body); outline:none;
+  }
+  .copy-btn{
+    background:var(--ink); color:var(--white); border:none;
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; transition:background .2s;
+  }
+  .copy-btn:hover{background:var(--orange);}
+  .copy-btn.copied{background:var(--green);}
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:700; font-size:13.5px; color:var(--ink-soft);
+    margin-bottom:28px;
+  }
+  .back-link:hover{color:var(--orange);}
+
+  @media (prefers-reduced-motion: reduce){
+    .hourglass-spin, .progress-fill{ animation:none !important; }
+  }
+
+  @media (max-width: 860px){
+    header{padding:16px 20px;}
+    nav.links{display:none;}
+    section{padding:64px 20px;}
+    .hero{padding:100px 20px 50px;}
+    .hero-grid{grid-template-columns:1fr; gap:40px;}
+    h1{font-size:42px;}
+    .feat-list{grid-template-columns:1fr;}
+    .provider-row{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr 1fr; row-gap:28px;}
+    .step{border-right:none;}
+    .step:nth-child(odd){border-right:1px solid var(--line);}
+    .cta-strip{flex-direction:column; align-items:flex-start;}
+    .upload-shell{padding:36px 20px 70px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING PAGE ============ -->
+<div id="landingPage">
+
+  <header>
+    <div class="brand">
+      <svg class="glass" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="#FF6901" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      multiput
+    </div>
+    <nav class="links">
+      <a href="#fitur" data-i18n="nav.features">Fitur</a>
+      <a href="#provider" data-i18n="nav.providers">Layanan</a>
+      <a href="#cara" data-i18n="nav.how">Cara kerja</a>
+    </nav>
+    <div class="header-right">
+      <div class="lang-switch">
+        <button type="button" data-lang="id" class="active">ID</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <a href="#" class="nav-cta" onclick="showUpload(); return false;">
+        <i data-lucide="upload-cloud" style="width:15px;height:15px;"></i>
+        <span data-i18n="nav.cta">Mulai upload</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <canvas id="particleCanvas"></canvas>
+    <div class="hero-grid">
+      <div data-aos="fade-up">
+        <span class="eyebrow" data-i18n="hero.eyebrow">Satu file, dua tujuan sekaligus</span>
+        <h1 data-i18n-html="hero.title">Kirim sekali,<br>dapat <span class="accent">semua URL</span>.</h1>
+        <p class="lead" data-i18n="hero.lead">Satu file diteruskan ke dua layanan hosting berbeda dalam satu proses. Waktu tunggu terlihat jelas — bukan indikator yang menghilang tiba-tiba.</p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary" onclick="showUpload(); return false;">
+            <i data-lucide="upload" style="width:16px;height:16px;"></i> <span data-i18n="hero.ctaPrimary">Upload file</span>
+          </a>
+          <a href="#cara" class="btn-ghost">
+            <i data-lucide="play" style="width:16px;height:16px;"></i> <span data-i18n="hero.ctaGhost">Lihat prosesnya</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual" data-aos="fade-left" data-aos-delay="150">
+        <div class="node source">
+          <div class="ic"><i data-lucide="file" style="width:18px;height:18px;"></i></div>
+          <div><span data-i18n="hero.node.source">File kamu</span><br><small data-i18n="hero.node.sourceSub">gambar, video, dokumen</small></div>
+        </div>
+        <div class="flow-line"></div>
+        <div class="node a">
+          <div class="ic"><i data-lucide="server" style="width:18px;height:18px;"></i></div>
+          <div>njy.my.id<br><small data-i18n="hero.node.njy">URL permanen</small></div>
+        </div>
+        <div class="node b">
+          <div class="ic"><i data-lucide="clock" style="width:18px;height:18px;"></i></div>
+          <div>unggah.web.id<br><small data-i18n="hero.node.unggah">URL dengan masa aktif</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fitur">
+    <div class="container">
+      <div class="section-head" data-aos="fade-up">
+        <div>
+          <span class="kicker" data-i18n="features.kicker">Apa yang terjadi saat kamu klik proses</span>
+          <h2 data-i18n="features.title">Bukan cuma tempat singgah file</h2>
+        </div>
+        <p data-i18n="features.lead">Setiap langkah dirancang supaya kamu tahu persis apa yang sedang dikerjakan sistem, bukan menebak dari layar kosong.</p>
+      </div>
+      <div class="feat-list">
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="0">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16M12 4V15M12 15L7 10M12 15L17 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3 data-i18n="features.f1.title">Pilih media langsung</h3>
+          <p data-i18n="features.f1.body">Klik area upload atau seret file dari perangkat. Gambar, video, audio, dan dokumen semua diterima.</p>
+        </div>
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="80">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M12 3V10M12 10L7 6M12 10L17 6M6 14C6 17.3 8.7 20 12 20C15.3 20 18 17.3 18 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="14" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="14" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3 data-i18n="features.f2.title">Diproses paralel</h3>
+          <p data-i18n="features.f2.body">Satu file dikirim ke kedua layanan pada waktu yang sama, bukan bergiliran menunggu satu selesai dulu.</p>
+        </div>
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="160">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M12 3L20 7V12C20 16.4 16.4 20.5 12 21C7.6 20.5 4 16.4 4 12V7L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3 data-i18n="features.f3.title">Kegagalan tidak disembunyikan</h3>
+          <p data-i18n="features.f3.body">Kalau satu layanan menolak file, kamu lihat alasannya langsung — layanan yang lain tetap lanjut tanpa terganggu.</p>
+        </div>
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="0">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3 data-i18n="features.f4.title">Masa berlaku bisa diatur</h3>
+          <p data-i18n="features.f4.body">Untuk layanan yang mendukungnya, tentukan sendiri umur URL — dari 30 menit sampai 30 hari.</p>
+        </div>
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="80">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4C3.4 15 3 14.6 3 14V4C3 3.4 3.4 3 4 3H14C14.6 3 15 3.4 15 4V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3 data-i18n="features.f5.title">Salin sekali klik</h3>
+          <p data-i18n="features.f5.body">Setiap URL hasil punya tombol salinnya sendiri — tidak perlu menyeleksi teks secara manual.</p>
+        </div>
+        <div class="feat-item" data-aos="fade-up" data-aos-delay="160">
+          <svg class="glyph" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7V12L15 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3 data-i18n="features.f6.title">Progres terlihat, bukan disamarkan</h3>
+          <p data-i18n="features.f6.body">Setiap kartu hasil punya indikator jalannya proses sendiri, jadi kamu tahu mana yang masih berjalan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="providers" id="provider">
+    <div class="container">
+      <div class="section-head" data-aos="fade-up">
+        <div>
+          <span class="kicker" data-i18n="providers.kicker">Tujuan pengiriman</span>
+          <h2 data-i18n="providers.title">Dua layanan, dua karakter</h2>
+        </div>
+        <p data-i18n="providers.lead">Dipakai bersamaan dalam satu proses, masing-masing dengan kelebihannya sendiri.</p>
+      </div>
+      <div class="provider-row">
+        <div class="provider-card" data-aos="fade-up">
+          <div class="provider-top">
+            <div class="provider-mark p1">N</div>
+            <div>
+              <div class="provider-title">njy.my.id</div>
+              <div class="provider-sub" data-i18n="providers.p1.sub">Upload langsung, URL tetap</div>
+            </div>
+          </div>
+          <div class="provider-tags">
+            <span class="tag" data-i18n="providers.p1.tag1">Tanpa kedaluwarsa</span>
+            <span class="tag" data-i18n="providers.p1.tag2">Semua tipe file</span>
+          </div>
+        </div>
+        <div class="provider-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="provider-top">
+            <div class="provider-mark p2">U</div>
+            <div>
+              <div class="provider-title">unggah.web.id</div>
+              <div class="provider-sub" data-i18n="providers.p2.sub">Masa berlaku bisa diatur</div>
+            </div>
+          </div>
+          <div class="provider-tags">
+            <span class="tag" data-i18n="providers.p2.tag1">30 menit – 30 hari</span>
+            <span class="tag" data-i18n="providers.p2.tag2">Ukuran file ditampilkan</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cara">
+    <div class="container">
+      <div class="section-head" data-aos="fade-up">
+        <div>
+          <span class="kicker" data-i18n="steps.kicker">Empat langkah</span>
+          <h2 data-i18n="steps.title">Dari file ke tautan</h2>
+        </div>
+        <p data-i18n="steps.lead">Satu kali proses, tanpa bolak-balik antar halaman upload.</p>
+      </div>
+      <div class="steps">
+        <div class="step" data-aos="fade-up" data-aos-delay="0">
+          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16M12 4V15M12 15L7 10M12 15L17 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h4 data-i18n="steps.s1.title">Pilih media</h4>
+          <p data-i18n="steps.s1.body">Klik area upload atau seret file dari perangkatmu.</p>
+        </div>
+        <div class="step" data-aos="fade-up" data-aos-delay="100">
+          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7V12L15 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h4 data-i18n="steps.s2.title">Atur masa berlaku</h4>
+          <p data-i18n="steps.s2.body">Tentukan umur URL jika layanan tujuan mendukungnya.</p>
+        </div>
+        <div class="step" data-aos="fade-up" data-aos-delay="200">
+          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h4 data-i18n="steps.s3.title">Proses</h4>
+          <p data-i18n="steps.s3.body">File berjalan ke kedua layanan pada saat yang sama.</p>
+        </div>
+        <div class="step" data-aos="fade-up" data-aos-delay="300">
+          <svg class="glass-mini" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M12 3L20 7V12C20 16.4 16.4 20.5 12 21C7.6 20.5 4 16.4 4 12V7L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h4 data-i18n="steps.s4.title">Ambil tautan</h4>
+          <p data-i18n="steps.s4.body">Setiap hasil tampil dengan status dan tombol salin sendiri.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="cta-strip" data-aos="zoom-in">
+        <h3 data-i18n="cta.title">Siap kirim file ke dua tujuan sekaligus?</h3>
+        <a href="#" class="btn-primary" onclick="showUpload(); return false;">
+          <i data-lucide="upload-cloud" style="width:16px;height:16px;"></i> <span data-i18n="cta.button">Buka halaman upload</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 multiput</div>
+    <div data-i18n="footer.note">Dibuat untuk keperluan internal</div>
+  </footer>
+
+</div>
+
+<!-- ============ UPLOAD PAGE ============ -->
+<div id="uploadPage">
+  <canvas id="particleCanvasUpload"></canvas>
+  <header>
+    <div class="brand">
+      <svg class="glass" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="#FF6901" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      multiput
+    </div>
+    <div class="header-right">
+      <div class="lang-switch">
+        <button type="button" data-lang="id" class="active">ID</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <nav class="links">
+        <a href="#" onclick="showLanding(); return false;" data-i18n="nav.home">Beranda</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="upload-shell">
+    <a href="#" class="back-link" onclick="showLanding(); return false;">
+      <i data-lucide="arrow-left" style="width:15px;height:15px;"></i> <span data-i18n="upload.back">Kembali ke beranda</span>
+    </a>
+
+    <div class="upload-head" data-aos="fade-up">
+      <h1 data-i18n="upload.title">Upload file</h1>
+      <p data-i18n="upload.subtitle">Pilih satu file, lalu proses ke kedua layanan sekaligus.</p>
+    </div>
+
+    <div id="dropzone" class="dropzone" data-aos="fade-up" data-aos-delay="100">
+      <input type="file" id="fileInput">
+      <div class="ic-wrap"><i data-lucide="upload-cloud" style="width:26px;height:26px;"></i></div>
+      <h3 data-i18n="upload.dropTitle">Klik atau seret file ke sini</h3>
+      <p data-i18n="upload.dropSubtitle">Gambar, video, audio, atau dokumen — ukuran mengikuti batas tiap layanan</p>
+    </div>
+
+    <div id="filePreview" style="display:none;"></div>
+
+    <div class="expiry-row" data-aos="fade-up" data-aos-delay="150">
+      <label><i data-lucide="hourglass" style="width:15px;height:15px;"></i> <span data-i18n="upload.expiryLabel">Masa berlaku (unggah.web.id)</span></label>
+      <select id="expirySelect">
+        <option value="30menit" data-i18n="upload.expiry.30m">30 menit</option>
+        <option value="60menit" selected data-i18n="upload.expiry.60m">60 menit</option>
+        <option value="1hari" data-i18n="upload.expiry.1d">1 hari</option>
+        <option value="3hari" data-i18n="upload.expiry.3d">3 hari</option>
+        <option value="7hari" data-i18n="upload.expiry.7d">7 hari</option>
+        <option value="30hari" data-i18n="upload.expiry.30d">30 hari</option>
+      </select>
+    </div>
+
+    <button id="processBtn" class="process-btn" disabled data-aos="fade-up" data-aos-delay="200">
+      <i data-lucide="zap" style="width:17px;height:17px;"></i>
+      <span data-i18n="upload.processButton">Proses ke semua layanan</span>
+    </button>
+
+    <div id="results" class="results"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+  // ---------- i18n ----------
+  const translations = {
+    id: {
+      "nav.features": "Fitur", "nav.providers": "Layanan", "nav.how": "Cara kerja",
+      "nav.cta": "Mulai upload", "nav.home": "Beranda",
+      "hero.eyebrow": "Satu file, dua tujuan sekaligus",
+      "hero.title": 'Kirim sekali,<br>dapat <span class="accent">semua URL</span>.',
+      "hero.lead": "Satu file diteruskan ke dua layanan hosting berbeda dalam satu proses. Waktu tunggu terlihat jelas — bukan indikator yang menghilang tiba-tiba.",
+      "hero.ctaPrimary": "Upload file", "hero.ctaGhost": "Lihat prosesnya",
+      "hero.node.source": "File kamu", "hero.node.sourceSub": "gambar, video, dokumen",
+      "hero.node.njy": "URL permanen", "hero.node.unggah": "URL dengan masa aktif",
+      "features.kicker": "Apa yang terjadi saat kamu klik proses",
+      "features.title": "Bukan cuma tempat singgah file",
+      "features.lead": "Setiap langkah dirancang supaya kamu tahu persis apa yang sedang dikerjakan sistem, bukan menebak dari layar kosong.",
+      "features.f1.title": "Pilih media langsung", "features.f1.body": "Klik area upload atau seret file dari perangkat. Gambar, video, audio, dan dokumen semua diterima.",
+      "features.f2.title": "Diproses paralel", "features.f2.body": "Satu file dikirim ke kedua layanan pada waktu yang sama, bukan bergiliran menunggu satu selesai dulu.",
+      "features.f3.title": "Kegagalan tidak disembunyikan", "features.f3.body": "Kalau satu layanan menolak file, kamu lihat alasannya langsung — layanan yang lain tetap lanjut tanpa terganggu.",
+      "features.f4.title": "Masa berlaku bisa diatur", "features.f4.body": "Untuk layanan yang mendukungnya, tentukan sendiri umur URL — dari 30 menit sampai 30 hari.",
+      "features.f5.title": "Salin sekali klik", "features.f5.body": "Setiap URL hasil punya tombol salinnya sendiri — tidak perlu menyeleksi teks secara manual.",
+      "features.f6.title": "Progres terlihat, bukan disamarkan", "features.f6.body": "Setiap kartu hasil punya indikator jalannya proses sendiri, jadi kamu tahu mana yang masih berjalan.",
+      "providers.kicker": "Tujuan pengiriman", "providers.title": "Dua layanan, dua karakter",
+      "providers.lead": "Dipakai bersamaan dalam satu proses, masing-masing dengan kelebihannya sendiri.",
+      "providers.p1.sub": "Upload langsung, URL tetap", "providers.p1.tag1": "Tanpa kedaluwarsa", "providers.p1.tag2": "Semua tipe file",
+      "providers.p2.sub": "Masa berlaku bisa diatur", "providers.p2.tag1": "30 menit – 30 hari", "providers.p2.tag2": "Ukuran file ditampilkan",
+      "steps.kicker": "Empat langkah", "steps.title": "Dari file ke tautan",
+      "steps.lead": "Satu kali proses, tanpa bolak-balik antar halaman upload.",
+      "steps.s1.title": "Pilih media", "steps.s1.body": "Klik area upload atau seret file dari perangkatmu.",
+      "steps.s2.title": "Atur masa berlaku", "steps.s2.body": "Tentukan umur URL jika layanan tujuan mendukungnya.",
+      "steps.s3.title": "Proses", "steps.s3.body": "File berjalan ke kedua layanan pada saat yang sama.",
+      "steps.s4.title": "Ambil tautan", "steps.s4.body": "Setiap hasil tampil dengan status dan tombol salin sendiri.",
+      "cta.title": "Siap kirim file ke dua tujuan sekaligus?", "cta.button": "Buka halaman upload",
+      "footer.note": "Dibuat untuk keperluan internal",
+      "upload.back": "Kembali ke beranda", "upload.title": "Upload file",
+      "upload.subtitle": "Pilih satu file, lalu proses ke kedua layanan sekaligus.",
+      "upload.dropTitle": "Klik atau seret file ke sini",
+      "upload.dropSubtitle": "Gambar, video, audio, atau dokumen — ukuran mengikuti batas tiap layanan",
+      "upload.expiryLabel": "Masa berlaku (unggah.web.id)",
+      "upload.expiry.30m": "30 menit", "upload.expiry.60m": "60 menit", "upload.expiry.1d": "1 hari",
+      "upload.expiry.3d": "3 hari", "upload.expiry.7d": "7 hari", "upload.expiry.30d": "30 hari",
+      "upload.processButton": "Proses ke semua layanan",
+      "upload.uploading": "Mengunggah...", "upload.success": "Berhasil diunggah",
+      "upload.failed": "Gagal", "upload.processing": "Memproses...",
+      "upload.validUntil": "Berlaku sampai", "upload.noFile": "File wajib dipilih terlebih dahulu.",
+      "upload.noUrl": "URL tidak ditemukan pada respons.", "upload.genericError": "Terjadi kesalahan"
+    },
+    en: {
+      "nav.features": "Features", "nav.providers": "Providers", "nav.how": "How it works",
+      "nav.cta": "Start uploading", "nav.home": "Home",
+      "hero.eyebrow": "One file, two destinations at once",
+      "hero.title": 'Send it once,<br>get <span class="accent">every URL</span>.',
+      "hero.lead": "One file gets pushed to two different hosting services in a single run. The wait is visible the whole time — not a spinner that just vanishes.",
+      "hero.ctaPrimary": "Upload a file", "hero.ctaGhost": "See how it runs",
+      "hero.node.source": "Your file", "hero.node.sourceSub": "images, video, documents",
+      "hero.node.njy": "Permanent URL", "hero.node.unggah": "URL with expiry",
+      "features.kicker": "What happens when you hit process",
+      "features.title": "More than a drop-off point",
+      "features.lead": "Every step is built so you know exactly what the system is doing, instead of guessing at a blank screen.",
+      "features.f1.title": "Pick media directly", "features.f1.body": "Click the upload area or drag a file in. Images, video, audio, and documents are all accepted.",
+      "features.f2.title": "Processed in parallel", "features.f2.body": "One file goes out to both services at the same time, not one after the other.",
+      "features.f3.title": "Failures aren't hidden", "features.f3.body": "If a service rejects the file, you see why immediately — the other one keeps going regardless.",
+      "features.f4.title": "Expiry is adjustable", "features.f4.body": "For services that support it, set how long the URL stays alive — from 30 minutes to 30 days.",
+      "features.f5.title": "Copy in one click", "features.f5.body": "Every result URL has its own copy button — no manual text selection needed.",
+      "features.f6.title": "Progress you can actually see", "features.f6.body": "Each result card shows its own progress indicator, so you know what's still running.",
+      "providers.kicker": "Where files go", "providers.title": "Two services, two personalities",
+      "providers.lead": "Used together in a single run, each with its own strength.",
+      "providers.p1.sub": "Direct upload, permanent URL", "providers.p1.tag1": "Never expires", "providers.p1.tag2": "Any file type",
+      "providers.p2.sub": "Adjustable expiry", "providers.p2.tag1": "30 min – 30 days", "providers.p2.tag2": "Shows file size",
+      "steps.kicker": "Four steps", "steps.title": "From file to link",
+      "steps.lead": "One pass, no switching between separate upload pages.",
+      "steps.s1.title": "Pick a file", "steps.s1.body": "Click the upload area or drag a file from your device.",
+      "steps.s2.title": "Set the expiry", "steps.s2.body": "Choose how long the URL lasts, where the destination supports it.",
+      "steps.s3.title": "Process", "steps.s3.body": "The file runs to both services at the same time.",
+      "steps.s4.title": "Grab the link", "steps.s4.body": "Every result shows up with its status and its own copy button.",
+      "cta.title": "Ready to send a file to both destinations?", "cta.button": "Open the upload page",
+      "footer.note": "Built for internal use",
+      "upload.back": "Back to home", "upload.title": "Upload a file",
+      "upload.subtitle": "Pick one file, then process it to both services at once.",
+      "upload.dropTitle": "Click or drag a file here",
+      "upload.dropSubtitle": "Images, video, audio, or documents — size follows each service's own limit",
+      "upload.expiryLabel": "Expiry (unggah.web.id)",
+      "upload.expiry.30m": "30 minutes", "upload.expiry.60m": "60 minutes", "upload.expiry.1d": "1 day",
+      "upload.expiry.3d": "3 days", "upload.expiry.7d": "7 days", "upload.expiry.30d": "30 days",
+      "upload.processButton": "Process to all services",
+      "upload.uploading": "Uploading...", "upload.success": "Uploaded successfully",
+      "upload.failed": "Failed", "upload.processing": "Processing...",
+      "upload.validUntil": "Valid until", "upload.noFile": "Please select a file first.",
+      "upload.noUrl": "No URL found in the response.", "upload.genericError": "Something went wrong"
+    }
+  };
+
+  let currentLang = 'id';
+
+  function applyTranslations(){
+    const dict = translations[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if(dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.documentElement.lang = currentLang;
+  }
+
+  function setLang(lang){
+    currentLang = lang;
+    applyTranslations();
+    document.querySelectorAll('.lang-switch button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.dataset.lang));
+  });
+
+  function t(key){
+    return translations[currentLang][key] || translations.id[key] || key;
+  }
+
+  // ---------- Ambient particle background (reusable for hero + upload page) ----------
+  const particleControllers = {};
+
+  function initParticles(canvasId, containerEl){
+    const canvas = document.getElementById(canvasId);
+    if(!canvas) return null;
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    let width, height;
+    let animId;
+    let started = false;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const colors = ['rgba(255,105,1,0.5)', 'rgba(255,105,31,0.35)', 'rgba(0,187,127,0.28)'];
+
+    function resize(){
+      width = canvas.width = containerEl.offsetWidth || 1;
+      height = canvas.height = containerEl.offsetHeight || 1;
+    }
+
+    function makeParticles(){
+      const count = Math.max(16, Math.min(32, Math.floor(width / 50)));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+    }
+
+    function step(){
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if(p.x < 0 || p.x > width) p.vx *= -1;
+        if(p.y < 0 || p.y > height) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      });
+
+      for(let i = 0; i < particles.length; i++){
+        for(let j = i + 1; j < particles.length; j++){
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if(dist < 120){
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(255,105,1,${0.1 * (1 - dist / 120)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      animId = requestAnimationFrame(step);
+    }
+
+    function drawStaticFrame(){
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      });
+    }
+
+    function start(){
+      if(started) return;
+      resize();
+      makeParticles();
+      if(width <= 1 || height <= 1) return; // container still hidden, retry later
+      started = true;
+      if(!reduceMotion){
+        step();
+      } else {
+        drawStaticFrame();
+      }
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      if(!started) return;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        cancelAnimationFrame(animId);
+        resize();
+        makeParticles();
+        if(!reduceMotion) step(); else drawStaticFrame();
+      }, 200);
+    });
+
+    start();
+
+    return { start, refresh(){ started = false; start(); } };
+  }
+
+  particleControllers.hero = initParticles('particleCanvas', document.querySelector('.hero'));
+  particleControllers.upload = initParticles('particleCanvasUpload', document.getElementById('uploadPage'));
+
+  lucide.createIcons();
+  AOS.init({ duration: 600, easing: 'ease-out', once: true });
+  applyTranslations();
+
+  const landingPage = document.getElementById('landingPage');
+  const uploadPage = document.getElementById('uploadPage');
+
+  function showUpload(){
+    landingPage.style.display = 'none';
+    uploadPage.style.display = 'block';
+    window.scrollTo(0,0);
+    setTimeout(()=>{
+      lucide.createIcons();
+      AOS.refreshHard();
+      if(particleControllers.upload) particleControllers.upload.refresh();
+    }, 30);
+  }
+  function showLanding(){
+    uploadPage.style.display = 'none';
+    landingPage.style.display = 'block';
+    window.scrollTo(0,0);
+    setTimeout(()=>{ lucide.createIcons(); }, 30);
+  }
+
+  // ---------- hourglass loader markup (reused inline) ----------
+  function hourglassIcon(size){
+    return `<svg class="hourglass-spin" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 3H18M6 21H18M7 3C7 8 12 10 12 12C12 10 17 8 17 3M7 21C7 16 12 14 12 12C12 14 17 16 17 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  // ---------- Upload logic ----------
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const filePreview = document.getElementById('filePreview');
+  const processBtn = document.getElementById('processBtn');
+  const resultsEl = document.getElementById('results');
+  const expirySelect = document.getElementById('expirySelect');
+
+  let selectedFile = null;
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  ['dragover','dragenter'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{
+      e.preventDefault();
+      dropzone.classList.add('drag');
+    });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{
+      e.preventDefault();
+      dropzone.classList.remove('drag');
+    });
+  });
+  dropzone.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files[0];
+    if(f) setFile(f);
+  });
+  fileInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(f) setFile(f);
+  });
+
+  function formatSize(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+  }
+
+  function setFile(f){
+    selectedFile = f;
+    filePreview.style.display = 'block';
+    filePreview.innerHTML = `
+      <div class="file-preview">
+        <div class="ic"><i data-lucide="file-check-2" style="width:19px;height:19px;"></i></div>
+        <div class="meta">
+          <div class="name">${f.name}</div>
+          <div class="size">${formatSize(f.size)}</div>
+        </div>
+        <button class="remove" onclick="clearFile()"><i data-lucide="x" style="width:15px;height:15px;"></i></button>
+      </div>
+    `;
+    lucide.createIcons();
+    processBtn.disabled = false;
+    resultsEl.innerHTML = '';
+  }
+
+  function clearFile(){
+    selectedFile = null;
+    fileInput.value = '';
+    filePreview.style.display = 'none';
+    filePreview.innerHTML = '';
+    processBtn.disabled = true;
+    resultsEl.innerHTML = '';
+  }
+
+  const providers = [
+    { id: 'njy', label: 'njy.my.id', run: uploadToNjy },
+    { id: 'unggah', label: 'unggah.web.id', run: uploadToUnggah }
+  ];
+
+  function renderPending(){
+    resultsEl.innerHTML = providers.map(p => `
+      <div class="result-card pending" id="card-${p.id}">
+        <div class="badge">${hourglassIcon(18)}</div>
+        <div class="result-body">
+          <div class="result-name">${p.label}</div>
+          <div class="result-status">${t('upload.uploading')}</div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderResult(id, ok, urlOrMsg, extra){
+    const card = document.getElementById(`card-${id}`);
+    if(!card) return;
+    const label = providers.find(p=>p.id===id).label;
+
+    if(ok){
+      card.className = 'result-card ok';
+      card.innerHTML = `
+        <div class="badge"><i data-lucide="check" style="width:18px;height:18px;"></i></div>
+        <div class="result-body">
+          <div class="result-name">${label}</div>
+          <div class="result-status">${extra || t('upload.success')}</div>
+          <div class="result-url">
+            <input type="text" readonly value="${urlOrMsg}">
+            <button class="copy-btn" onclick="copyUrl(this, '${urlOrMsg.replace(/'/g,"\\'")}')">
+              <i data-lucide="copy" style="width:13px;height:13px;"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      card.className = 'result-card err';
+      card.innerHTML = `
+        <div class="badge"><i data-lucide="x" style="width:18px;height:18px;"></i></div>
+        <div class="result-body">
+          <div class="result-name">${label}</div>
+          <div class="result-status">${t('upload.failed')}: ${urlOrMsg}</div>
+        </div>
+      `;
+    }
+    lucide.createIcons();
+  }
+
+  function copyUrl(btn, url){
+    navigator.clipboard.writeText(url).then(()=>{
+      btn.classList.add('copied');
+      btn.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;"></i>';
+      lucide.createIcons();
+      setTimeout(()=>{
+        btn.classList.remove('copied');
+        btn.innerHTML = '<i data-lucide="copy" style="width:13px;height:13px;"></i>';
+        lucide.createIcons();
+      }, 1500);
+    });
+  }
+
+  async function uploadToNjy(){
+    const fd = new FormData();
+    fd.append('file', selectedFile, selectedFile.name);
+    const res = await fetch('/api/tools/tourl', { method: 'POST', body: fd });
+    const data = await res.json();
+    if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
+    const url = data.result?.url || data.result?.file || data.result;
+    if(!url) throw new Error(t('upload.noUrl'));
+    renderResult('njy', true, typeof url === 'string' ? url : JSON.stringify(url));
+  }
+
+  async function uploadToUnggah(){
+    const fd = new FormData();
+    fd.append('file', selectedFile, selectedFile.name);
+    fd.append('expired', expirySelect.value);
+    const res = await fetch('/api/tools/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if(!res.ok || !data.status) throw new Error(data.message || ('Status ' + res.status));
+    const url = data.result?.url;
+    if(!url) throw new Error(t('upload.noUrl'));
+    renderResult('unggah', true, url, `${t('upload.validUntil')} ${data.result?.expiredAt || expirySelect.value}`);
+  }
+
+  processBtn.addEventListener('click', async () => {
+    if(!selectedFile) return;
+
+    setBusy(true);
+    renderPending();
+
+    const jobs = providers.map(p =>
+      p.run().catch(err => renderResult(p.id, false, err.message || t('upload.genericError')))
+    );
+
+    await Promise.allSettled(jobs);
+
+    setBusy(false);
+  });
+
+  function setBusy(isBusy){
+    processBtn.disabled = isBusy;
+    expirySelect.disabled = isBusy;
+    dropzone.classList.toggle('disabled', isBusy);
+
+    if(isBusy){
+      processBtn.innerHTML = `${hourglassIcon(17)} <span>${t('upload.processing')}</span>`;
+    } else {
+      processBtn.innerHTML = `<i data-lucide="zap" style="width:17px;height:17px;"></i> <span>${t('upload.processButton')}</span>`;
+      lucide.createIcons();
+    }
+  }
+</script>
+
+</body>
+</html>
