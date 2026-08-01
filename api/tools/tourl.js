@@ -18,26 +18,33 @@ async function handler(req, res) {
     }
 
     const fd = new FormData();
-
-    fd.append("file", file.buffer, {
-      filename: file.originalname,
-      contentType: file.mimetype
-    });
+    fd.append("userhash", "");
+    fd.append("reqtype", "fileupload");
+    fd.append("fileToUpload", file.buffer, { filename: file.originalname });
 
     const upload = await axios.post(
-      "https://njy.my.id/api/upload",
+      "https://catbox.moe/user/api.php",
       fd,
       {
-        headers: fd.getHeaders(),
+        headers: {
+          ...fd.getHeaders(),
+          "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36",
+          "Accept": "application/json",
+          "Origin": "https://catbox.moe",
+          "Referer": "https://catbox.moe/"
+        },
         maxBodyLength: Infinity,
-        maxContentLength: Infinity
+        maxContentLength: Infinity,
+        timeout: 60000
       }
     );
 
-    if (!upload.data || upload.data.status === false || !upload.data.result) {
+    const resultUrl = typeof upload.data === "string" ? upload.data.trim() : "";
+
+    if (!resultUrl || !resultUrl.startsWith("http")) {
       return res.status(502).json({
         status: false,
-        message: "njy.my.id menolak file ini.",
+        message: "catbox.moe menolak file ini.",
         detail: upload.data
       });
     }
@@ -45,7 +52,7 @@ async function handler(req, res) {
     return res.json({
       status: true,
       creator: "multiput",
-      result: upload.data.result
+      result: { url: resultUrl }
     });
 
   } catch (e) {
@@ -64,4 +71,3 @@ handler.config = {
 };
 
 module.exports = handler;
-
