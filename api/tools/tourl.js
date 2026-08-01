@@ -28,10 +28,7 @@ async function handler(req, res) {
       {
         headers: {
           ...fd.getHeaders(),
-          "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36",
-          "Accept": "application/json",
-          "Origin": "https://catbox.moe",
-          "Referer": "https://catbox.moe/"
+          "User-Agent": "multiput/1.0 (+https://catbox.moe/tools.php)"
         },
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
@@ -44,8 +41,8 @@ async function handler(req, res) {
     if (!resultUrl || !resultUrl.startsWith("http")) {
       return res.status(502).json({
         status: false,
-        message: "catbox.moe menolak file ini.",
-        detail: upload.data
+        message: "catbox.moe menolak file ini (kemungkinan tipe file tidak diizinkan atau server sedang membatasi permintaan).",
+        detail: typeof upload.data === "string" ? upload.data.slice(0, 300) : upload.data
       });
     }
 
@@ -56,9 +53,17 @@ async function handler(req, res) {
     });
 
   } catch (e) {
-    return res.status(e.response?.status || 500).json({
+    const status = e.response?.status;
+    let message = e.response?.data;
+    message = typeof message === "string" ? message.slice(0, 300) : (e.message || "Terjadi kesalahan saat menghubungi catbox.moe");
+
+    if (status === 412) {
+      message = "catbox.moe menolak permintaan (412). Biasanya karena file tidak didukung atau server sedang memblokir permintaan otomatis — coba lagi beberapa saat.";
+    }
+
+    return res.status(status || 500).json({
       status: false,
-      message: e.response?.data?.message || e.message,
+      message,
       detail: e.response?.data || null
     });
   }
